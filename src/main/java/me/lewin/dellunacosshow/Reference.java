@@ -3,17 +3,17 @@ package me.lewin.dellunacosshow;
 import me.lewin.dellunacosshow.commands.CosCommand;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
+import java.util.List;
 
 public class Reference {
     public static final String SUCCESS = "§7[§a ! §7] §a";
@@ -32,6 +32,8 @@ public class Reference {
     public static String CosPath = "";
     public static String CosKey = "";
 
+    public static ArmorStand spectatorLock;
+
     public static Location getNpcLocation() {
         FileConfiguration config = CosCommand.getConfig();
         return config.getLocation("NPC");
@@ -44,6 +46,8 @@ public class Reference {
         FileConfiguration config = CosCommand.getConfig();
         return config.getLocation("out");
     }
+
+    public static ArrayList<Location> List = new ArrayList<>();
 
     public static YamlConfiguration getConfig(String filename) {
         Plugin plugin = JavaPlugin.getPlugin(Main.class);

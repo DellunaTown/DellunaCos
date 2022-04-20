@@ -90,6 +90,7 @@ public class GUI{
         meta.setDisplayName(name);
         if (lore.size() != 0) meta.setLore(lore);
         if (color) {
+            ((LeatherArmorMeta) meta).setColor((Color) config.get("item." + key + ".cset"));
             meta.addEnchant(Enchantment.DURABILITY, 1, false);
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         }
@@ -107,7 +108,7 @@ public class GUI{
         ItemMeta meta = item.getItemMeta();
         assert meta != null;
 
-        meta.setCustomModelData(10);
+        meta.setCustomModelData(1000);
         meta.setDisplayName(name);
         if (lore.size() != 0) meta.setLore(lore);
 
@@ -139,6 +140,7 @@ public class GUI{
         ItemMeta meta = item.getItemMeta();
         assert meta != null;
 
+        ((LeatherArmorMeta) meta).setColor((Color) config.get("item." + key + ".cset"));
         meta.setCustomModelData(customModelData);
         meta.setDisplayName(name);
         if (lore.size() != 0) meta.setLore(lore);

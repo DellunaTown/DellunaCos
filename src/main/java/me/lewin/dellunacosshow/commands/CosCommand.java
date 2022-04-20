@@ -1,5 +1,6 @@
 package me.lewin.dellunacosshow.commands;
 
+import me.lewin.dellunacosshow.GUI;
 import me.lewin.dellunacosshow.Main;
 import me.lewin.dellunacosshow.Reference;
 import net.citizensnpcs.api.CitizensAPI;
@@ -17,6 +18,7 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -44,6 +46,10 @@ public class CosCommand implements CommandExecutor {
             case "remove":
                 onCommandRemove(args, player);
                 break;
+            case "test":
+                System.out.println(Reference.List);
+                System.out.println("===================");
+                System.out.println(Reference.NPCLocation);
         }
         return true;
     }
@@ -89,21 +95,21 @@ public class CosCommand implements CommandExecutor {
         Reference.NPC.data().setPersistent(NPC.NAMEPLATE_VISIBLE_METADATA, false);
         Reference.NPC.faceLocation(Reference.getViewPointLocation());
 
-        Reference.TaskID = Bukkit.getServer().getScheduler().runTaskTimerAsynchronously(plugin, new TimerScheduler(), 0, 0).getTaskId();
-
-        ArmorStand spectatorLock = (ArmorStand) player.getWorld().spawnEntity(viewLocation, EntityType.ARMOR_STAND);
-        spectatorLock.setSilent(true);
-        spectatorLock.setGravity(false);
-        spectatorLock.setVisible(false);
+        Reference.spectatorLock = (ArmorStand) player.getWorld().spawnEntity(viewLocation, EntityType.ARMOR_STAND);
+        Reference.spectatorLock.setSilent(true);
+        Reference.spectatorLock.setGravity(false);
+        Reference.spectatorLock.setVisible(false);
 
         Reference.NPCLocation = Reference.NPC.getStoredLocation();
         Reference.OnUse = true;
         Reference.USER = player;
         player.setGameMode(GameMode.SPECTATOR);
-        player.setSpectatorTarget(spectatorLock);
+        player.setSpectatorTarget(Reference.spectatorLock);
         player.sendMessage(Reference.SUCCESS + "옷장에 입장하셨습니다. 마음에 드는 리소스를 마음껏 구경해보세요.");
         player.sendMessage(Reference.SUCCESS + "좌클릭 : 옷장 열기");
         player.sendMessage(Reference.SUCCESS + "쉬프트 : 나가기");
+
+        Reference.TaskID = Bukkit.getServer().getScheduler().runTaskTimerAsynchronously(plugin, new TimerScheduler(), 0, 0).getTaskId();
     }
     private void onCommandAdd(String[] args, Player player) {
         ItemStack cos = player.getItemInHand();
@@ -120,6 +126,9 @@ public class CosCommand implements CommandExecutor {
 
                 configA.set("item.new" + args[4] + ".type", args[2]);
                 configA.set("item.new" + args[4] + ".color", Boolean.valueOf(args[3]));
+                if (Boolean.valueOf(args[3])) {
+                    configA.set("item.new" + args[4] + ".cset", ((LeatherArmorMeta)cos.getItemMeta()).getColor());
+                }
                 configA.set("item.new" + args[4] + ".slots", slotsListA);
 
                 configA.set("item.new" + args[4] + ".material", cos.getType().toString());
@@ -145,6 +154,9 @@ public class CosCommand implements CommandExecutor {
 
                 configB.set("item." + args[1] + count + ".type", args[2]);
                 configB.set("item." + args[1] + count + ".color", Boolean.valueOf(args[3]));
+                if (Boolean.valueOf(args[3])) {
+                    configB.set("item." + args[1] + count + ".cset", ((LeatherArmorMeta)cos.getItemMeta()).getColor());
+                }
 
                 configB.set("item." + args[1] + count + ".material", cos.getType().toString());
                 configB.set("item." + args[1] + count + ".customModelData", cos.getItemMeta().getCustomModelData());
@@ -205,26 +217,24 @@ public class CosCommand implements CommandExecutor {
     }
 
     static class TimerScheduler implements Runnable {
-        Location NPCLocation = Reference.NPCLocation.clone();
-        double x = NPCLocation.getX();
-        double z = NPCLocation.getZ();
-        double dis = Reference.getViewPointLocation().distance(NPCLocation);
+        Location NPCLocations = Reference.NPCLocation.clone();
+        double x = NPCLocations.getX();
+        double z = NPCLocations.getZ();
+        double dis = Reference.getViewPointLocation().distance(NPCLocations);
         double count = 0;
 
         @Override
         public void run() {
             double cosX = dis * Math.cos(Math.toRadians(count));
             double sinZ = dis * Math.sin(Math.toRadians(count));
-
-            if (x >= 0) NPCLocation.setX(x + cosX);
-            else NPCLocation.setX(x - cosX);
-            if (z <= 0) NPCLocation.setZ(z - sinZ);
-            else NPCLocation.setZ(z + sinZ);
-
-            System.out.println(NPCLocation);
-
-            Reference.NPC.faceLocation(NPCLocation);
             count+=2;
+
+            if (x >= 0) NPCLocations.setX(x + cosX);
+            else NPCLocations.setX(x - cosX);
+            if (z <= 0) NPCLocations.setZ(z - sinZ);
+            else NPCLocations.setZ(z + sinZ);
+
+            Reference.NPC.faceLocation(NPCLocations);
         }
     }
 }

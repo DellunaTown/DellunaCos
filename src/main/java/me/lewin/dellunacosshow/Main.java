@@ -22,6 +22,9 @@ public final class Main extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new PlayerSneakEvent(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerClickEvent(), this);
         Bukkit.getPluginManager().registerEvents(new GuiClickEvent(), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerLeaveEvent(), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerTeleportEvent(), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerMoveEvent(), this);
 
         Reference.getGuiTitles();
     }
